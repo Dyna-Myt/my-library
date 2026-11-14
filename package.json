@@ -1,0 +1,28 @@
+{
+  "name": "my-library",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A dark, moving bookshelf for books, articles, PDFs, videos and notes.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "seed:sql": "node scripts/generate-seed-sql.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.119.0",
+    "next": "15.5.29",
+    "react": "19.2.9",
+    "react-dom": "19.2.9"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.5",
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "tailwindcss": "^4.3.5",
+    "typescript": "^5.9.0"
+  }
+}
