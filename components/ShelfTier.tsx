@@ -13,6 +13,7 @@ interface ShelfTierProps {
   hoveredId: string | null;
   searchActive: boolean;
   searchMatch: (item: LibraryItem) => boolean;
+  readIds: Set<string>;
   onOpen: (item: LibraryItem) => void;
   onHoverStart: (item: LibraryItem, element: HTMLElement) => void;
   onHoverEnd: (item: LibraryItem) => void;
@@ -24,6 +25,7 @@ export function ShelfTier({
   hoveredId,
   searchActive,
   searchMatch,
+  readIds,
   onOpen,
   onHoverStart,
   onHoverEnd,
@@ -79,6 +81,7 @@ export function ShelfTier({
               isHovered={hoveredId === token.item.id}
               searchActive={searchActive}
               searchMatch={searchMatch(token.item)}
+              isRead={readIds.has(token.item.id)}
               onOpen={onOpen}
               onHoverStart={onHoverStart}
               onHoverEnd={onHoverEnd}
@@ -99,6 +102,7 @@ interface SpineSlotProps {
   isHovered: boolean;
   searchActive: boolean;
   searchMatch: boolean;
+  isRead: boolean;
   onOpen: (item: LibraryItem) => void;
   onHoverStart: (item: LibraryItem, element: HTMLElement) => void;
   onHoverEnd: (item: LibraryItem) => void;
@@ -111,6 +115,7 @@ function SpineSlot({
   isHovered,
   searchActive,
   searchMatch,
+  isRead,
   onOpen,
   onHoverStart,
   onHoverEnd,
@@ -123,6 +128,7 @@ function SpineSlot({
       isHovered={isHovered}
       searchActive={searchActive}
       searchMatch={searchMatch}
+      isRead={isRead}
       onOpen={onOpen}
       onHoverStart={onHoverStart}
       onHoverEnd={onHoverEnd}

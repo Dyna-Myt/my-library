@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react"
 import { initialsFor, splitTitle, type LibraryItem } from "@/lib/types";
 import { spineProfile } from "@/lib/palette";
 import { SpineArt } from "./SpineArt";
-import { PlayIcon } from "./icons";
+import { CheckIcon, PlayIcon } from "./icons";
 
 const FONT_MAX = 20;
 const FONT_MIN = 11;
@@ -85,6 +85,7 @@ interface SpineProps {
   index: number;
   searchActive: boolean;
   searchMatch: boolean;
+  isRead: boolean;
   neighbor: "prev" | "next" | null;
   isHovered: boolean;
   onOpen: (item: LibraryItem) => void;
@@ -97,6 +98,7 @@ export function Spine({
   index,
   searchActive,
   searchMatch,
+  isRead,
   neighbor,
   isHovered,
   onOpen,
@@ -175,6 +177,7 @@ export function Spine({
         type="button"
         className="spine"
         data-type={item.type}
+        data-read={isRead ? "true" : "false"}
         style={
           {
             "--h": profile.heightPct,
@@ -183,8 +186,7 @@ export function Spine({
             "--title-size": `${fit.size}px`,
           } as CSSProperties
         }
-        aria-label={`${titleLabel} — open details`}
-        aria-haspopup="dialog"
+        aria-label={`${titleLabel}${isRead ? ", read" : ""} — open on the reading desk`}
         onClick={() => onOpen(item)}
         onPointerEnter={(event) => onHoverStart(item, event.currentTarget)}
         onPointerLeave={() => onHoverEnd(item)}
@@ -193,6 +195,12 @@ export function Spine({
       >
         <SpineArt profile={profile} />
         <span className="spine-pages" aria-hidden="true" />
+
+        {isRead && (
+          <span className="spine-read" aria-hidden="true">
+            <CheckIcon />
+          </span>
+        )}
 
         {item.type === "pdf" && <span className="spine-ribbon" aria-hidden="true" />}
         {item.type === "video" && (

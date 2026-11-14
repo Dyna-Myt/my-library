@@ -4,12 +4,13 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 
 import { fetchItems } from "@/lib/items";
 import { numberCategories, spineProfile } from "@/lib/palette";
+import { loadReadIds, saveReadIds } from "@/lib/reading";
 import {
   categoryRank,
   type DataSource,
   type LibraryItem,
 } from "@/lib/types";
-import { DetailPanel } from "./DetailPanel";
+import { ReadingDesk } from "./ReadingDesk";
 import { Scrubber, type ScrubberHandle } from "./Scrubber";
 import { ShelfTier, type ShelfToken } from "./ShelfTier";
 import { CloseIcon, LockIcon, SearchIcon } from "./icons";
@@ -110,6 +111,7 @@ export function LibraryShell({ initialItems, source }: LibraryShellProps) {
   const [rowMode, setRowMode] = useState<"auto" | "1" | "2" | "3">("auto");
   const [stageWidth, setStageWidth] = useState(0);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [readIds, setReadIds] = useState<Set<string>>(() => new Set());
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
@@ -148,6 +150,15 @@ export function LibraryShell({ initialItems, source }: LibraryShellProps) {
       window.removeEventListener("storage", load);
     };
   }, [source]);
+
+  // Read markers are per-browser, so they are read after mount and kept in sync
+  // across tabs.
+  useEffect(() => {
+    setReadIds(loadReadIds());
+    const sync = () => setReadIds(loadReadIds());
+    window.addEventListener("storage", sync);
+    return () => window.removeEventListener("storage", sync);
+  }, []);
 
   const orderedCategories = useMemo(() => {
     const seen = new Set<string>();
@@ -227,6 +238,30 @@ export function LibraryShell({ initialItems, source }: LibraryShellProps) {
   );
 
   const selectedItem = selectedId ? items.find((item) => item.id === selectedId) ?? null : null;
+
+  /**
+   * The desk follows whatever the shelf is currently showing: the active
+   * category, and the search matches when a search is running. With nothing
+   * selected it falls back to the first item, so the section is never empty.
+   */
+  const deskItems = useMemo(() => {
+    if (!searchActive) return visibleItems;
+    const matches = visibleItems.filter(itemMatches);
+    return matches.length > 0 ? matches : visibleItems;
+  }, [visibleItems, searchActive, itemMatches]);
+
+  const deskItem =
+    selectedItem && deskItems.some((item) => item.id === selectedItem.id)
+      ? selectedItem
+      : deskItems[0] ?? null;
+  const deskIndex = deskItem ? deskItems.findIndex((item) => item.id === deskItem.id) : -1;
+
+  // A filter or search can hide the selected item; let the desk fall back.
+  useEffect(() => {
+    if (selectedId && !deskItems.some((item) => item.id === selectedId)) {
+      setSelectedId(null);
+    }
+  }, [deskItems, selectedId]);
 
   /* ---------------------------------------------------------------- */
   /*  Scroll position, ticks and snapping                              */
@@ -384,13 +419,13 @@ export function LibraryShell({ initialItems, source }: LibraryShellProps) {
         Boolean((target as HTMLElement | null)?.isContentEditable);
       const onSlider = Boolean(target?.closest('[role="slider"]'));
 
-      if (event.key === "/" && !typing && !selectedId && !event.metaKey && !event.ctrlKey && !event.altKey) {
+      if (event.key === "/" && !typing && !event.metaKey && !event.ctrlKey && !event.altKey) {
         event.preventDefault();
         searchRef.current?.focus();
         searchRef.current?.select();
         return;
       }
-      if (typing || selectedId || onSlider || event.metaKey || event.ctrlKey || event.altKey) return;
+      if (typing || onSlider || event.metaKey || event.ctrlKey || event.altKey) return;
       if (event.key === "ArrowLeft") {
         event.preventDefault();
         scrollByAmount(-360);
@@ -402,7 +437,7 @@ export function LibraryShell({ initialItems, source }: LibraryShellProps) {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [scrollByAmount, selectedId]);
+  }, [scrollByAmount]);
 
   /* ---------------------------------------------------------------- */
   /*  Drag + inertia                                                   */
@@ -535,7 +570,35 @@ export function LibraryShell({ initialItems, source }: LibraryShellProps) {
     setSelectedId(item.id);
     setHoveredId(null);
     setTooltip(null);
+    const desk = document.getElementById("reading-desk");
+    if (desk) {
+      desk.scrollIntoView({
+        behavior: prefersReducedMotion() ? "auto" : "smooth",
+        block: "start",
+      });
+    }
   }, []);
+
+  const toggleRead = useCallback((item: LibraryItem) => {
+    setReadIds((previous) => {
+      const next = new Set(previous);
+      if (next.has(item.id)) next.delete(item.id);
+      else next.add(item.id);
+      saveReadIds(next);
+      return next;
+    });
+  }, []);
+
+  const stepDesk = useCallback(
+    (delta: number) => {
+      if (deskItems.length === 0) return;
+      const next = (deskIndex + delta + deskItems.length) % deskItems.length;
+      setSelectedId(deskItems[next].id);
+      setHoveredId(null);
+      setTooltip(null);
+    },
+    [deskItems, deskIndex],
+  );
 
   const chooseCategory = (category: string) => {
     setActiveCategory(category);
@@ -762,6 +825,7 @@ export function LibraryShell({ initialItems, source }: LibraryShellProps) {
                         hoveredId={hoveredId}
                         searchActive={searchActive}
                         searchMatch={itemMatches}
+                        readIds={readIds}
                         onOpen={openItem}
                         onHoverStart={showTooltip}
                         onHoverEnd={hideTooltip}
@@ -787,6 +851,20 @@ export function LibraryShell({ initialItems, source }: LibraryShellProps) {
                   }.`}
             </p>
           </section>
+
+          {deskItem && (
+            <ReadingDesk
+              item={deskItem}
+              items={deskItems}
+              index={deskIndex}
+              categoryNumber={categoryNumbers.get(deskItem.category) ?? "00"}
+              query={query}
+              isRead={readIds.has(deskItem.id)}
+              onToggleRead={toggleRead}
+              onPrevious={() => stepDesk(-1)}
+              onNext={() => stepDesk(1)}
+            />
+          )}
         </main>
 
         <footer className="site-footer">
@@ -811,15 +889,6 @@ export function LibraryShell({ initialItems, source }: LibraryShellProps) {
           </span>
           <span className="tt-hint">Click to open</span>
         </div>
-      )}
-
-      {selectedItem && (
-        <DetailPanel
-          item={selectedItem}
-          categoryNumber={categoryNumbers.get(selectedItem.category) ?? "00"}
-          onClose={() => setSelectedId(null)}
-          query={query}
-        />
       )}
     </>
   );

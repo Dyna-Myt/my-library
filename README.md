@@ -2,7 +2,8 @@
 
 A private, dark bookshelf for books, articles, PDFs, videos and notes. The public
 shelf is read-only: a long horizontal wall of colourful spines, numbered category
-dividers, filters, search, and a detail panel. Behind `/admin` is a librarian's
+dividers, filters, search, and a reading desk below the shelf where the selected
+item lies open as a 3D cover beside its note-card. Behind `/admin` is a librarian's
 desk for adding, editing, uploading and deleting items.
 
 Built with **Next.js 15 (App Router) · TypeScript · Tailwind CSS 4 · Supabase**.
@@ -39,10 +40,11 @@ npm run seed:sql    # regenerate supabase/seed.sql from lib/seed.ts
 
 | Path | Purpose |
 | --- | --- |
-| `components/LibraryShell.tsx` | Shelf orchestration: filters, search, drag/inertia, wheel, keyboard, snap, scrubber, panel |
+| `components/LibraryShell.tsx` | Shelf orchestration: filters, search, drag/inertia, wheel, keyboard, snap, scrubber, reading desk |
 | `components/Spine.tsx` | A single spine + canvas-measured title fitting |
 | `components/ShelfTier.tsx` | One tier: dividers, spines, plank, hover neighbours |
-| `components/DetailPanel.tsx` | Side panel / bottom sheet |
+| `components/ReadingDesk.tsx` | Reading desk below the shelf: 3D cover + note-card, pager, read toggle |
+| `lib/reading.ts` | Read/unread markers in `localStorage` (per browser) |
 | `lib/palette.ts` | Hash → stable colour, dimensions and wavy blobs; ink contrast |
 | `lib/items.ts` | **The only data layer**: Supabase or demo, auth, uploads, public URLs |
 | `lib/seed.ts` | Seed items (also the source of `supabase/seed.sql`) |
@@ -65,14 +67,14 @@ npm run seed:sql    # regenerate supabase/seed.sql from lib/seed.ts
    or paste a bundled path like `/files/atomic-habits.pdf`, then **Add to shelf**.
 
 Uploaded files live in the public `library` storage bucket and are opened from the
-detail panel in a new tab. Notes can have no link at all. Edits and deletes are in
+reading desk in a new tab. Notes can have no link at all. Edits and deletes are in
 the same list on the right.
 
 ### Bundled PDFs (`public/files/`)
 
 The 15 book PDFs are committed under `public/files/` and linked from the seed with
 relative URLs such as `/files/atomic-habits.pdf`. They need no storage service and
-open from the detail panel in a new tab.
+open from the reading desk in a new tab.
 
 To add another PDF this way:
 
@@ -105,6 +107,29 @@ the first article you save.
 Categories are ordered by `CATEGORY_ORDER` in `lib/types.ts`; categories that are
 not listed appear after the known ones. Divider numbers (`#01`, `#02`, …) are
 assigned from the categories actually present.
+
+---
+
+## The reading desk
+
+Below the shelf sits the **reading desk**: the selected item lies open as a 3D cover
+on the left, with a note-card on the right showing its type, category, title, author,
+note, tags and actions.
+
+- **It is always there.** With nothing selected it shows the first item in the
+  current view, so the page never has an empty section.
+- **Click a spine** to bring that item to the desk; the page scrolls to it. There is
+  no overlay panel.
+- **Follows the shelf.** The desk is scoped to the active filter and, while
+  searching, to the matching items. **Previous / Next** (or the counter) step
+  through that same list.
+- **Open / Read** opens a book, PDF, article or video in a new tab, labelled for its
+  type.
+- **Mark as read** toggles a per-browser marker saved in `localStorage`
+  (`my-library:read:v1`). Read items show a small tick on their spine and say
+  ", read" in the screen-reader label. It is personal to each browser and is not
+  written to Supabase.
+- **Search** highlights matched words on the desk too.
 
 ---
 
@@ -232,18 +257,20 @@ at the right place. `/admin` is `noindex`.
 - **Move the shelf:** drag with a mouse, swipe, two-finger trackpad scroll, mouse
   wheel, `←` / `→` keys, or the mini scrubber at the bottom.
 - **Search:** press `/`, or type in the box. Matches title, author, category, tags
-  and note; matches glow while the rest dim, and the open detail panel marks the
+  and note; matches glow while the rest dim, and the reading desk marks the
   matched words. `Esc` clears.
 - **Snap:** "Snap on" settles the wall at the nearest category divider after a
   drag/scroll.
 - **Rows:** the **Rows** control switches between **Auto**, **1**, **2** and **3**
   stacked tiers. Auto keeps one long, scrollable row while the wall fits in about
   two screens, then splits into two or three tiers as the library grows.
-- **Open an item:** click a spine or press Enter. `Esc` or the backdrop closes it.
-- **Keyboard:** all spines, filters, search, scrubber and panel controls are
-  focusable with visible focus rings.
+- **Open an item:** click a spine or press Enter to show it on the reading desk
+  below the shelf. The desk's **Previous / Next** buttons walk the current list.
+- **Keyboard:** all spines, filters, search, scrubber and desk controls are
+  focusable with visible focus rings. `←` / `→` move the shelf whenever you are
+  not typing.
 - **Reduced motion:** `prefers-reduced-motion` removes inertia, parallax, hover
-  transforms and panel/slot animations.
+  transforms and desk/slot animations.
 
 ---
 
