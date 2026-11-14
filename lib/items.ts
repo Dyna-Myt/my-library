@@ -14,7 +14,7 @@ import { isItemType, sortItems, type AdminSession, type ItemInput, type LibraryD
 const SUPABASE_URL = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? "").trim();
 const SUPABASE_ANON_KEY = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "").trim();
 const STORAGE_BUCKET = "library";
-const DEMO_ITEMS_KEY = "my-library:items:v1";
+const DEMO_ITEMS_KEY = "my-library:items:v2";
 const DEMO_SESSION_KEY = "my-library:demo-session";
 const DEMO_PASSCODE = process.env.NEXT_PUBLIC_DEMO_PASSCODE ?? "library";
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;

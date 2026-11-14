@@ -50,6 +50,7 @@ npm run seed:sql    # regenerate supabase/seed.sql from lib/seed.ts
 | `app/globals.css` | Design tokens + every visual style |
 | `supabase/schema.sql` | Table, trigger, RLS, grants, storage bucket and policies |
 | `supabase/seed.sql` | Seed rows with stable UUIDs |
+| `public/files/` | The 15 bundled book PDFs, served as `/files/<name>.pdf` |
 
 ---
 
@@ -60,11 +61,29 @@ npm run seed:sql    # regenerate supabase/seed.sql from lib/seed.ts
    (YouTube and Vimeo use oEmbed; other pages use Open Graph / `<title>`).
 3. Fill in title, author, type, category, tags, optional note and optional cover
    colour. Leave the colour empty to derive it from the title hash.
-4. Optionally attach a PDF/file (Supabase Storage, max 50 MB), then **Add to shelf**.
+4. Optionally attach a PDF/file (Supabase Storage, max 50 MB), paste a public URL,
+   or paste a bundled path like `/files/atomic-habits.pdf`, then **Add to shelf**.
 
 Uploaded files live in the public `library` storage bucket and are opened from the
 detail panel in a new tab. Notes can have no link at all. Edits and deletes are in
 the same list on the right.
+
+### Bundled PDFs (`public/files/`)
+
+The 15 book PDFs are committed under `public/files/` and linked from the seed with
+relative URLs such as `/files/atomic-habits.pdf`. They need no storage service and
+open from the detail panel in a new tab.
+
+To add another PDF this way:
+
+1. Copy it into `public/files/` with a lowercase, hyphenated name.
+2. In `/admin`, edit the item and paste `/files/your-file.pdf` into the **URL**
+   field — or add it to `lib/seed.ts` as `url` and re-run `npm run seed:sql`.
+3. Commit and redeploy.
+
+A relative URL works in both demo and Supabase mode, because the file is served by
+Next.js itself. Because these files ship with every deployment, keep them modest in
+size; move to Supabase Storage once the collection grows.
 
 Categories are ordered by `CATEGORY_ORDER` in `lib/types.ts`; categories that are
 not listed appear after the known ones. Divider numbers (`#01`, `#02`, …) are
