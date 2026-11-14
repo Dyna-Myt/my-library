@@ -143,6 +143,9 @@ override their colour with **Cover colour** in the admin form.
 
 ### 1. Push the project
 
+This repo is already pushed to
+<https://github.com/Dyna-Myt/my-library> (private, `main`). If you fork or copy it:
+
 ```bash
 git init
 git add .
@@ -156,18 +159,21 @@ git push -u origin main
 - Go to <https://vercel.com/new> and import the repository.
 - Framework preset: **Next.js** (auto-detected). Build: `npm run build`. No special
   output directory.
-- Add the environment variables (Production + Preview + Development):
+- **No environment variables are required to deploy in demo mode.** The site runs
+  on the bundled 20-item seed with localStorage edits and the passcode `library`.
+  Add these only when you connect Supabase or a custom domain (Production +
+  Preview + Development):
 
-  | Name | Value |
-  | --- | --- |
-  | `NEXT_PUBLIC_SITE_URL` | `https://your-project.vercel.app` (or custom domain) |
-  | `NEXT_PUBLIC_SUPABASE_URL` | your Supabase project URL |
-  | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | your Supabase anon/publishable key |
+  | Name | Value | Needed when |
+  | --- | --- | --- |
+  | `NEXT_PUBLIC_SITE_URL` | `https://your-project.vercel.app` (or custom domain) | custom domain / canonical URLs |
+  | `NEXT_PUBLIC_SUPABASE_URL` | your Supabase project URL | real database |
+  | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | your Supabase anon/publishable key | real database |
 
   `NEXT_PUBLIC_DEMO_PASSCODE` is optional and only used when Supabase is absent.
 - Deploy.
 
-Or from the CLI:
+Or from the CLI (the `env add` lines are optional in demo mode):
 
 ```bash
 npx vercel login
