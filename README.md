@@ -85,6 +85,23 @@ A relative URL works in both demo and Supabase mode, because the file is served 
 Next.js itself. Because these files ship with every deployment, keep them modest in
 size; move to Supabase Storage once the collection grows.
 
+### Substack articles
+
+Substack posts get their own **Substack** section on the shelf. Each one sits as an
+article spine and opens the real post on Substack in a new tab.
+
+1. Go to `/admin` and paste the post link (for example
+   `https://joereis.substack.com/p/gartner-declares-2026-the-year-of`).
+2. Press **Fetch title**. The title is read from the post's `og:title`, the author
+   from its metadata, the type is set to **Article**, and the category is set to
+   **Substack** automatically.
+3. Adjust tags or note if you like, then **Add to shelf**.
+
+Detection covers `*.substack.com` and Substack publications on custom domains
+(their pages still load assets from `substackcdn.com`). If a link isn't recognised,
+pick **Substack** from the category field's suggestions — the section is created by
+the first article you save.
+
 Categories are ordered by `CATEGORY_ORDER` in `lib/types.ts`; categories that are
 not listed appear after the known ones. Divider numbers (`#01`, `#02`, …) are
 assigned from the categories actually present.

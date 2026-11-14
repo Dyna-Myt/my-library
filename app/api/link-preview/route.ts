@@ -93,6 +93,8 @@ export async function POST(request: Request) {
 
   const host = url.hostname.replace(/^www\./i, "").toLowerCase();
   let suggestedType: ItemType = url.pathname.toLowerCase().endsWith(".pdf") ? "pdf" : "article";
+  const isSubstack = host === "substack.com" || host.endsWith(".substack.com");
+  let suggestedCategory = isSubstack ? "Substack" : undefined;
 
   try {
     // YouTube and Vimeo expose a friendly oEmbed response.
@@ -172,6 +174,11 @@ export async function POST(request: Request) {
     const raw = await response.text();
     const html = raw.slice(0, 900_000);
 
+    // Substacks on custom domains still serve their assets from substackcdn.com.
+    if (!suggestedCategory && /substackcdn\.com|substack\.com\/api/i.test(html)) {
+      suggestedCategory = "Substack";
+    }
+
     const title = titleFromHtml(html);
     if (!title) {
       return NextResponse.json(
@@ -195,6 +202,7 @@ export async function POST(request: Request) {
       author,
       siteName,
       suggestedType,
+      suggestedCategory,
     });
   } catch (error) {
     const message =

@@ -55,6 +55,7 @@ export const CATEGORY_ORDER = [
   "Art & Culture",
   "Politics & Society",
   "Children",
+  "Substack",
   "Unsorted",
 ] as const;
 

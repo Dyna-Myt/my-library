@@ -201,6 +201,7 @@ export function AdminDesk() {
         author?: string;
         siteName?: string;
         suggestedType?: ItemType;
+        suggestedCategory?: string;
         error?: string;
       };
       if (!response.ok) throw new Error(data.error || "Could not read that link.");
@@ -209,6 +210,10 @@ export function AdminDesk() {
         title: data.title?.trim() || previous.title,
         author: previous.author.trim() || data.author?.trim() || previous.author,
         type: data.suggestedType ?? previous.type,
+        category:
+          previous.category.trim() && previous.category !== "Unsorted"
+            ? previous.category
+            : data.suggestedCategory ?? previous.category,
       }));
       setNotice(
         data.title
