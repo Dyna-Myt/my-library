@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Architects_Daughter, Caveat, Fraunces, Inter } from "next/font/google";
 
 import "./globals.css";
 
@@ -12,6 +12,21 @@ const inter = Inter({
 const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-fraunces",
+  display: "swap",
+});
+
+// Handwritten UI font, as used across interesting-reads.vercel.app.
+const architects = Architects_Daughter({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-architects",
+  display: "swap",
+});
+
+// Handwritten display face for the brand and big titles.
+const caveat = Caveat({
+  subsets: ["latin"],
+  variable: "--font-caveat",
   display: "swap",
 });
 
@@ -66,14 +81,17 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   colorScheme: "dark",
-  themeColor: "#090B12",
+  themeColor: "#000000",
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
+    <html
+      lang="en"
+      className={`${inter.variable} ${fraunces.variable} ${architects.variable} ${caveat.variable}`}
+    >
       <body>
         <a className="skip-link" href="#shelf">
           Skip to the shelf

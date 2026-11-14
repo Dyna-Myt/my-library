@@ -23,10 +23,10 @@ export default function OpenGraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          backgroundColor: "#090B12",
+          backgroundColor: "#000000",
           backgroundImage:
-            "radial-gradient(circle at 72% 4%, rgba(95,72,190,0.38), transparent 42%), radial-gradient(circle at 10% 90%, rgba(255,106,77,0.13), transparent 40%)",
-          color: "#EDEFF7",
+            "radial-gradient(circle at 72% 4%, rgba(255,255,255,0.06), transparent 42%), radial-gradient(circle at 10% 90%, rgba(255,106,77,0.10), transparent 40%)",
+          color: "#F3EFE7",
           padding: "62px 72px 0",
           position: "relative",
           overflow: "hidden",
@@ -70,7 +70,7 @@ export default function OpenGraphImage() {
               marginTop: 22,
               fontSize: 25,
               lineHeight: 1.35,
-              color: "#8A93AB",
+              color: "#8F8A7F",
               maxWidth: 660,
             }}
           >
@@ -147,7 +147,7 @@ export default function OpenGraphImage() {
             right: 0,
             bottom: 0,
             height: 24,
-            background: "linear-gradient(180deg, #232B3F, #161B28)",
+            background: "linear-gradient(180deg, #2B2B2B, #1B1B1B)",
             boxShadow: "0 -1px 0 rgba(255,255,255,0.14)",
           }}
         />

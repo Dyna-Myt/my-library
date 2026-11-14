@@ -170,25 +170,26 @@ users can write. Never put the service-role key in this app.
 
 ## Change the palette
 
-The palette is **Midnight Indigo + Ember**. There are two places, and both use the
-same hex values:
+The palette is **Ink Black + Ember**, matching interesting-reads.vercel.app: a pure
+black page, handwritten UI and a coral accent. There are two places, and both use
+the same hex values:
 
 1. **`app/globals.css`** — `:root` variables and the `@theme inline` Tailwind
    tokens. This drives the background, shelf, accent, text and the five spine
    colours:
 
    ```css
-   --bg: #090b12;
-   --shelf: #161b28;
-   --shelf-top: #232b3f;
+   --bg: #000000;
+   --shelf: #1b1b1b;
+   --shelf-top: #2b2b2b;
    --accent: #ff6a4d;
    --spine-indigo: #3b4bc8;
    --spine-teal: #14b8a6;
    --spine-violet: #8b5cf6;
    --spine-rose: #e5487a;
    --spine-sand: #e8d9b5;
-   --text: #edeff7;
-   --muted: #8a93ab;
+   --text: #f3efe7;
+   --muted: #8f8a7f;
    ```
 
 2. **`lib/palette.ts`** — `SPINE_COLORS` (the same five spine colours) and
@@ -197,6 +198,22 @@ same hex values:
 
 Change both lists, and the books recolor deterministically. Individual items can
 override their colour with **Cover colour** in the admin form.
+
+### Typography
+
+The fonts are loaded with `next/font/google` in `app/layout.tsx` and exposed as CSS
+variables:
+
+| Variable | Family | Used for |
+| --- | --- | --- |
+| `--font-hand` | **Architects Daughter** | Body, labels, filter pills, buttons, tags, hints |
+| `--font-title` | **Caveat** (700) | Site brand, desk title, admin/login headings |
+| `--font-display` | **Fraunces** | Spine titles, cover artwork title, notes/blurbs |
+| `--font-meta` | **Inter** | Tiny cover type/author and spine initials |
+
+This mirrors interesting-reads.vercel.app. To change the look, edit the
+`--font-hand` / `--font-title` / `--font-display` / `--font-meta` tokens in
+`app/globals.css`; the family names come from `app/layout.tsx`.
 
 ---
 
