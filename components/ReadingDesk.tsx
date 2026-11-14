@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 
 import { hrefForItem } from "@/lib/items";
 import { spineProfile } from "@/lib/palette";
@@ -96,7 +96,12 @@ export function ReadingDesk({
   const { main, subtitle } = useMemo(() => splitTitle(item.title), [item.title]);
   const href = hrefForItem(item);
   const initials = initialsFor(item.author);
-  const added = formatDate(item.createdAt);
+  // Format the date after mount only: the server renders in UTC while the browser
+  // uses the visitor's timezone, which would otherwise break hydration.
+  const [added, setAdded] = useState<string | null>(null);
+  useEffect(() => {
+    setAdded(formatDate(item.createdAt));
+  }, [item.createdAt]);
 
   return (
     <section className="reading-desk" id="reading-desk" aria-labelledby="desk-title">
