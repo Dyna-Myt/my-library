@@ -1,7 +1,8 @@
-import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+﻿import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 import { SEED_ITEMS } from "./seed";
 import { isItemType, sortItems, type AdminSession, type ItemInput, type LibraryData, type LibraryItem } from "./types";
+import { safeUUID } from "./uuid";
 
 /**
  * The single data layer. Everything the app knows about persistence, auth and
@@ -129,7 +130,7 @@ function safeReadDemoItems(): LibraryItem[] {
     const items = parsed
       .filter((entry): entry is Record<string, unknown> => Boolean(entry) && typeof entry === "object")
       .map((entry): LibraryItem => ({
-        id: String(entry.id ?? crypto.randomUUID()),
+        id: String(entry.id ?? safeUUID()),
         title: String(entry.title ?? "Untitled"),
         author: String(entry.author ?? ""),
         type: isItemType(entry.type) ? entry.type : "book",
@@ -189,7 +190,7 @@ export async function createItem(input: ItemInput): Promise<LibraryItem> {
     const items = safeReadDemoItems();
     const item: LibraryItem = {
       ...input,
-      id: crypto.randomUUID(),
+      id: safeUUID(),
       createdAt: new Date().toISOString(),
     };
     writeDemoItems([...items, item]);
@@ -266,7 +267,7 @@ export async function uploadLibraryFile(file: File): Promise<UploadedFile> {
   }
 
   const client = getBrowserSupabase();
-  const id = crypto.randomUUID();
+  const id = safeUUID();
   const path = `${new Date().getFullYear()}/${id}-${sanitizeFilename(file.name)}`;
   const { error } = await client.storage.from(STORAGE_BUCKET).upload(path, file, {
     cacheControl: "3600",

@@ -2547,3 +2547,99 @@ button:disabled {
     z-index: 8;
   }
 }
+
+/* ------------------------------------------------------------------ */
+/*  Crash screen (app/error.tsx)                                       */
+/* ------------------------------------------------------------------ */
+
+.crash-screen {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  padding: 24px;
+  background: var(--bg);
+}
+
+.crash-card {
+  width: min(480px, 100%);
+  padding: 26px 24px;
+  border: 1px solid var(--line-strong);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #141414, #0a0a0a);
+  box-shadow: 0 40px 90px -50px #000, inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.crash-kicker {
+  margin: 0 0 6px;
+  color: var(--accent);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.crash-title {
+  margin: 0 0 10px;
+  font-family: var(--font-title);
+  font-size: clamp(30px, 7vw, 40px);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.crash-copy {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+.crash-detail {
+  margin: 0 0 20px;
+  max-height: 40vh;
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #0e0e0e;
+  color: var(--muted-strong);
+  font-family: var(--font-meta);
+  font-size: 11.5px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.crash-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.crash-primary,
+.crash-secondary {
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-family: var(--font-hand);
+  font-size: 13px;
+  cursor: pointer;
+  transition: transform 160ms var(--ease-out), box-shadow 160ms, border-color 160ms;
+}
+
+.crash-primary {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.crash-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -12px var(--accent);
+}
+
+.crash-secondary {
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--text);
+}
+
+.crash-secondary:hover {
+  border-color: var(--accent);
+}
