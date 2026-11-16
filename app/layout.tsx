@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Architects_Daughter, Caveat, Fraunces, Inter } from "next/font/google";
 
+import { BOOT_GUARD } from "@/lib/boot-guard";
+
 import "./globals.css";
 
 const inter = Inter({
@@ -93,6 +95,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       className={`${inter.variable} ${fraunces.variable} ${architects.variable} ${caveat.variable}`}
     >
       <body>
+        {/* Plain inline script: next/script would queue this behind the very
+            bundle it is supposed to watch for failures. */}
+        <script dangerouslySetInnerHTML={{ __html: BOOT_GUARD }} />
         <a className="skip-link" href="#shelf">
           Skip to the shelf
         </a>

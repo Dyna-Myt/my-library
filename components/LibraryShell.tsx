@@ -365,6 +365,15 @@ export function LibraryShell({ initialItems, source }: LibraryShellProps) {
 
     const measureWidth = () => setStageWidth(scroller.clientWidth);
     measureWidth();
+    if (typeof ResizeObserver === "undefined") {
+      const frame = requestAnimationFrame(() => refreshMetrics());
+      return () => {
+        scroller.removeEventListener("scroll", handleScroll);
+        scroller.removeEventListener("wheel", handleWheel);
+        cancelAnimationFrame(frame);
+        if (snapTimerRef.current) window.clearTimeout(snapTimerRef.current);
+      };
+    }
     const observer = new ResizeObserver(() => {
       measureWidth();
       refreshMetrics();

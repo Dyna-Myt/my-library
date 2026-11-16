@@ -129,6 +129,11 @@ export function Spine({
     };
 
     measure();
+    if (typeof ResizeObserver === "undefined") {
+      return () => {
+        cancelled = true;
+      };
+    }
     const observer = new ResizeObserver(measure);
     observer.observe(wrap);
     return () => {
@@ -144,7 +149,12 @@ export function Spine({
       const element = titleRef.current ?? spineRef.current;
       if (!element) return;
       const family = getComputedStyle(element).fontFamily;
-      setFit(measureFit(main, subtitle, available, family));
+      try {
+        setFit(measureFit(main, subtitle, available, family));
+      } catch {
+        // Canvas measurement can fail on memory-starved browsers.
+        setFit(estimateFit(main, subtitle, available));
+      }
     };
 
     compute();
